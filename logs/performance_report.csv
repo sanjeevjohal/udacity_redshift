@@ -1,0 +1,3 @@
+Package,Date/Time,Elapsed Time
+create_tables.py,2023-03-17 12:31:13,15.06 seconds
+etl.py,2023-03-17 12:36:20,244.87 seconds

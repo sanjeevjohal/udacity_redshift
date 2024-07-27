@@ -1,0 +1,6 @@
+2023-03-17 12:30:58,014 connection string postgresql://sjdwhuser:Qscnko123@sjredshiftcluster.czzel40muimn.us-west-2.redshift.amazonaws.com:5439/sjdwh
+2023-03-17 12:30:58,015 STARTED at 2023-03-17 12:30:58
+2023-03-17 12:31:05,722 tables dropped at 2023-03-17 12:31:05
+2023-03-17 12:31:13,074 tables created at 2023-03-17 12:31:13
+2023-03-17 12:31:13,075 ENDED at 2023-03-17 12:31:13
+2023-03-17 12:31:13,075 Elapsed time: 15.06 seconds

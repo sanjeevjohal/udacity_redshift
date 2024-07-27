@@ -1,0 +1,35 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Create a multi-node Redshift cluster"
+Parameters:
+  MasterUserPassword:
+    Description: The password that is associated with the master user account for
+      the cluster that is being created.
+    Type: String
+    Default: Qscnko123
+    NoEcho: 'true'
+  PortNumber:
+    Description: The port number on which the cluster accepts incoming connections.
+    Type: Number
+    Default: '5439'
+Resources:
+  # Create a multi-node Redshift cluster with 4 nodes and of node_type dc2.large in region us-east-1
+  RedshiftCluster:
+    Type: "AWS::Redshift::Cluster"
+    Properties:
+      ClusterType: "multi-node"
+      NodeType: "dc2.large"
+      NumberOfNodes: 4
+      DBName: "sjdwh"
+      MasterUsername: "sjdwhuser"
+      MasterUserPassword: !Ref MasterUserPassword
+      Port: !Ref PortNumber
+      ClusterParameterGroupName: "default.redshift-1.0"
+      AvailabilityZone: "us-east-1a"
+      PreferredMaintenanceWindow: "Sun:03:00-Sun:04:00"
+      ClusterIdentifier: "myredshiftcluster"
+#      IamRoles:
+#        - !ImportValue arn:aws:iam::507188270340:role/RedshiftRole
+# Output the role ARN, Redshift cluster endpoint, and Redshift cluster role ARN
+Outputs:
+  RedshiftClusterEndpoint:
+    Value: !GetAtt RedshiftCluster.Endpoint.Address

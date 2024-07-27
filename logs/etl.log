@@ -1,0 +1,82 @@
+2023-03-17 12:32:16,097 connection string postgresql://sjdwhuser:Qscnko123@sjredshiftcluster.czzel40muimn.us-west-2.redshift.amazonaws.com:5439/sjdwh
+2023-03-17 12:32:17,486 STARTING: loading staging tables
+2023-03-17 12:32:17,487 query = 
+    COPY staging_events FROM 's3://sjohal/udacity-dend/log_data' 
+    credentials 'aws_iam_role=arn:aws:iam::288093678599:role/myRedshiftRole'  
+    REGION 'us-west-2' JSON 's3://sjohal/udacity-dend/log_json_path.json';
+
+2023-03-17 12:32:20,726 query = COPY staging_songs FROM 's3://sjohal/udacity-dend/song_data' credentials 'aws_iam_role=arn:aws:iam::288093678599:role/myRedshiftRole'  REGION 'us-west-2' JSON 'auto'  ;
+
+2023-03-17 12:36:15,231 FINISHED: loading staging tables
+2023-03-17 12:36:15,231 query = INSERT INTO artists SELECT DISTINCT artist_id,artist_name ,artist_location ,artist_latitude ,artist_longitude  FROM staging_songs WHERE artist_id IS NOT NULL;
+
+2023-03-17 12:36:16,444 query = INSERT INTO songs SELECT DISTINCT song_id ,title,artist_id,cast(year as int),cast (duration as decimal)  FROM staging_songs WHERE song_id IS NOT NULL;
+
+2023-03-17 12:36:17,539 query = INSERT INTO times select DISTINCT
+timestamp 'epoch' + cast(ts as bigint)/1000 * interval '1 second',
+EXTRACT(HOUR FROM timestamp 'epoch' + cast(ts as bigint)/1000 * interval '1 second'),
+           EXTRACT(DAY FROM timestamp 'epoch' + ts/1000 * interval '1 second'),
+           EXTRACT(WEEK FROM timestamp 'epoch' + ts/1000 * interval '1 second'),
+           EXTRACT(MONTH FROM timestamp 'epoch' + ts/1000 * interval '1 second'),
+           EXTRACT(YEAR FROM timestamp 'epoch' + ts/1000 * interval '1 second'),
+           EXTRACT(DOW FROM timestamp 'epoch' + ts/1000 * interval '1 second')+1
+           FROM staging_events
+           WHERE ts IS NOT NULL;
+
+2023-03-17 12:36:18,709 query = INSERT INTO users select  DISTINCT user_id ,first_name,last_name,gender,level 
+FROM staging_events WHERE user_id IS NOT NULL;
+
+2023-03-17 12:36:19,753 query = INSERT INTO songplays (start_time,user_id,level,song_id,artist_id,session_id,location,user_agent)
+SELECT DISTINCT timestamp 'epoch' + ts /1000 * interval '1 second',
+a.user_id,
+a.level,
+e.song_id,
+e.artist_id,
+a.session_id,
+a.location,
+a.user_agent
+FROM staging_events a left join staging_songs e on a.song = e.title and a.artist = e.artist_name
+where a.page='NextSong'
+
+2023-03-17 12:36:20,970 FINISHED: inserting tables
+2023-03-17 12:36:20,970 Elapsed time for loading: 244.87 seconds
+2023-03-17 12:36:20,970 query = 
+    SELECT COUNT(*) FROM staging_events
+
+2023-03-17 12:36:21,634 table 
+    SELECT COUNT(*) FROM staging_events
+ has 8071 rows
+2023-03-17 12:36:21,634 query = 
+    SELECT COUNT(*) FROM staging_songs
+
+2023-03-17 12:36:22,208 table 
+    SELECT COUNT(*) FROM staging_songs
+ has 14896 rows
+2023-03-17 12:36:22,208 query = 
+    SELECT COUNT(*) FROM songplays
+
+2023-03-17 12:36:22,798 table 
+    SELECT COUNT(*) FROM songplays
+ has 6820 rows
+2023-03-17 12:36:22,798 query = 
+    SELECT COUNT(*) FROM users
+
+2023-03-17 12:36:23,400 table 
+    SELECT COUNT(*) FROM users
+ has 105 rows
+2023-03-17 12:36:23,401 query = 
+    SELECT COUNT(*) FROM songs
+
+2023-03-17 12:36:23,979 table 
+    SELECT COUNT(*) FROM songs
+ has 14896 rows
+2023-03-17 12:36:23,980 query = 
+    SELECT COUNT(*) FROM artists
+
+2023-03-17 12:36:24,561 table 
+    SELECT COUNT(*) FROM artists
+ has 10025 rows
+2023-03-17 12:36:24,562 query = 
+    SELECT COUNT(*) FROM times
+ has 8023 rows
+
